@@ -6,10 +6,15 @@
 class SodaMachine
 {
  public:
-  SodaMachine() {}
+  SodaMachine();
   ~SodaMachine() {}
 
   std::string choose(std::string selection);
+  void insertFunds(int funds);
+
+ private:
+  bool sufficientFunds();
+  int value;
 };
 
 #endif
