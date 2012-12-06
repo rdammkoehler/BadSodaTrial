@@ -1,16 +1,19 @@
 #include "SodaMachine.h"
+#include "Product.h"
 
 SodaMachine::SodaMachine()
 {
   value = 0;
 }
 
-std::string SodaMachine::choose(std::string selection)
+Product* SodaMachine::choose(Product::ProductType selection)
 {
-  if(sufficientFunds())
+  Product* ret = (Product *)NULL;
+  if (sufficientFunds())
     {
-      return selection;
+      return new Product(selection);
     }
+  return ret;
 }
 
 bool SodaMachine::sufficientFunds()

@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "SodaMachine.h"
+#include "Product.h"
 
 class SodaMachineTest : public ::testing::Test
 {
@@ -22,29 +23,29 @@ TEST_F(SodaMachineTest, ChooseProduct)
 {
   SodaMachine* sodaMachine = new SodaMachine;
   sodaMachine->insertFunds(75);
-  std::string product = sodaMachine->choose("Diet Coke");
-  EXPECT_EQ("Diet Coke", product);
+  Product* product = sodaMachine->choose(Product::DietCoke);
+  EXPECT_EQ(Product::DietCoke, product->type);
 }
 
 TEST_F(SodaMachineTest, ChooseAnotherProduct)
 {
   SodaMachine* sodaMachine = new SodaMachine;
   sodaMachine->insertFunds(75);
-  std::string product = sodaMachine->choose("Dr Pepper");
-  EXPECT_EQ("Dr Pepper", product);
+  Product* product = sodaMachine->choose(Product::Dr_Pepper);
+  EXPECT_EQ(Product::Dr_Pepper, product->type);
 }
 
 TEST_F(SodaMachineTest, ChooseNothingIfNotPaid)
 {
   SodaMachine* sodaMachine = new SodaMachine;
-  std::string product = sodaMachine->choose("Dr Pepper");
-  ASSERT_EQ(product, "");
+  Product* product = sodaMachine->choose(Product::Dr_Pepper);
+  ASSERT_EQ(product->type, Product::NotAProduct);
 }
 
 TEST_F(SodaMachineTest, ChooseProductIfPaid)
 {
   SodaMachine* sodaMachine = new SodaMachine;
   sodaMachine->insertFunds(75);
-  std::string product = sodaMachine->choose("Dr Pepper");
-  EXPECT_EQ(product, "Dr Pepper");
+  Product* product = sodaMachine->choose(Product::Dr_Pepper);
+  EXPECT_EQ(product->type, Product::Dr_Pepper);
 }
