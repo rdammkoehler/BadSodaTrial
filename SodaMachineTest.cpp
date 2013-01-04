@@ -1,51 +1,72 @@
-#include "gtest/gtest.h"
-#include "SodaMachine.h"
-#include "Product.h"
+#include <gtest/gtest.h>
 
-class SodaMachineTest : public ::testing::Test
+#include "SodaMachine.h"
+#include "Vendor.h"
+
+using namespace Soda;
+using namespace ::testing;
+
+class SodaMachineTest : public Test
 {
-public:
+protected:
   void SetUp()
   {
+  	sodaMachine = new SodaMachine;
   }
   void TearDown()
   {
+  	delete sodaMachine;
+  	sodaMachine = NULL;
   }
+
+  SodaMachine* sodaMachine;
 };
 
-TEST_F(SodaMachineTest, ConstructorTest)
+TEST_F(SodaMachineTest, CanAddInventory)
 {
-  SodaMachine* sodaMachine = new SodaMachine;
-  ASSERT_NE(sodaMachine, (SodaMachine*)NULL);
+  int position = 0;
+  InventoryItem* drPepper = new InventoryItem("DrPepper", 0.75, 10);
+  sodaMachine->Add(position, drPepper);
+  EXPECT_EQ(*drPepper, *(sodaMachine->Inventory(position)));
 }
 
-TEST_F(SodaMachineTest, ChooseProduct)
+TEST_F(SodaMachineTest, CanAddManyItemsToInventory)
 {
-  SodaMachine* sodaMachine = new SodaMachine;
-  sodaMachine->insertFunds(75);
-  Product* product = sodaMachine->choose(Product::DietCoke);
-  EXPECT_EQ(Product::DietCoke, product->type);
+  int cokePosition = 0;
+  int drPepperPosition = 1;
+  InventoryItem* drPepper = new InventoryItem("DrPepper", 0.75, 10);
+  InventoryItem* coke = new InventoryItem("Coke", 0.75, 8);
+
+  sodaMachine->Add(cokePosition, coke);
+  sodaMachine->Add(drPepperPosition, drPepper);
+
+  EXPECT_EQ(*drPepper, *(sodaMachine->Inventory(drPepperPosition)));
+  EXPECT_EQ(*coke, *(sodaMachine->Inventory(cokePosition)));
 }
 
-TEST_F(SodaMachineTest, ChooseAnotherProduct)
+TEST_F(SodaMachineTest, CanPurchaseAProduct)
 {
-  SodaMachine* sodaMachine = new SodaMachine;
-  sodaMachine->insertFunds(75);
-  Product* product = sodaMachine->choose(Product::Dr_Pepper);
-  EXPECT_EQ(Product::Dr_Pepper, product->type);
+  int position = 0;
+  InventoryItem* drPepper = new InventoryItem("DrPepper", 0.75, 10);
+  sodaMachine->Add(position, drPepper);
+
+  InventoryItem* myDrPepper = sodaMachine->Purchase(position, 0.75);
+  EXPECT_EQ(*drPepper, *myDrPepper);
+
+  delete myDrPepper;
+  myDrPepper = NULL;
 }
 
-TEST_F(SodaMachineTest, ChooseNothingIfNotPaid)
+TEST_F(SodaMachineTest, CanStockTheMachine)
 {
-  SodaMachine* sodaMachine = new SodaMachine;
-  Product* product = sodaMachine->choose(Product::Dr_Pepper);
-  ASSERT_EQ(product->type, Product::NotAProduct);
-}
+	Vendor myVendor;
 
-TEST_F(SodaMachineTest, ChooseProductIfPaid)
-{
-  SodaMachine* sodaMachine = new SodaMachine;
-  sodaMachine->insertFunds(75);
-  Product* product = sodaMachine->choose(Product::Dr_Pepper);
-  EXPECT_EQ(product->type, Product::Dr_Pepper);
+	sodaMachine->Stock(myVendor);
+	EXPECT_EQ(*(sodaMachine->Inventory(0)), *(myVendor.GetInventory()[0]));
+	EXPECT_EQ(*(sodaMachine->Inventory(1)), *(myVendor.GetInventory()[1]));
+	EXPECT_EQ(*(sodaMachine->Inventory(2)), *(myVendor.GetInventory()[2]));
+	EXPECT_EQ(*(sodaMachine->Inventory(3)), *(myVendor.GetInventory()[3]));
+	EXPECT_EQ(*(sodaMachine->Inventory(4)), *(myVendor.GetInventory()[4]));
+	EXPECT_EQ(*(sodaMachine->Inventory(5)), *(myVendor.GetInventory()[5]));
+	EXPECT_EQ(*(sodaMachine->Inventory(6)), *(myVendor.GetInventory()[6]));
 }

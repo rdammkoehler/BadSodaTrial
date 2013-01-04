@@ -1,34 +1,37 @@
 #include "SodaMachine.h"
-#include "Product.h"
+
+using namespace Soda;
 
 SodaMachine::SodaMachine()
 {
-  value = 0;
 }
 
-Product* SodaMachine::choose(Product::ProductType selection)
+SodaMachine::~SodaMachine()
 {
-  Product* ret = (Product *)NULL;
-  if (sufficientFunds())
-    {
-      return new Product(selection);
-    }
-  return ret;
 }
 
-bool SodaMachine::sufficientFunds()
+void SodaMachine::Add(int position, InventoryItem* item)
 {
-  if(value == 75)
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
+	// MEMORY LEAK ON PURPOSE
+	MyInventory[position] = new InventoryItem(item);
 }
 
-void SodaMachine::insertFunds(int funds)
+const InventoryItem* SodaMachine::Inventory(int position) const
 {
-  value = funds;
+	return MyInventory.at(position);
+}
+
+InventoryItem* SodaMachine::Purchase(int position, double amount)
+{
+	// MORE MEMORY LEAKS POSSIBLE HERE!
+	const InventoryItem* oldItem = Inventory(position);
+	return new InventoryItem(oldItem);
+}
+
+void SodaMachine::Stock(Vendor& vendor)
+{
+	for(int i = 0; i < vendor.GetInventory().size(); i++)
+	{
+		MyInventory[i] = vendor.GetInventory()[i];
+	}
 }
